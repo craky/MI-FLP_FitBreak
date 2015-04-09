@@ -69,6 +69,22 @@ void reverse_edges(graph_t * g){
 	}
 }
 
+int get_real_dist(graph_t * g){
+	int source, dest, real_dist = 0;
+
+	dest = g->m_nodes_cnt-1;
+	source = g->m_predecessor[dest];
+	if(source < 0)/* predecessor does not exist */
+		return INF;
+	while(dest != 0){
+		real_dist += g->m_adjacency_matrix[dest][source];
+		dest = source;
+		source = g->m_predecessor[dest];
+	}
+
+	return real_dist;
+}
+
 /* Bellman Ford algorithm */
 void bellman_ford(graph_t * g){
 	int i , j, k;
@@ -97,20 +113,24 @@ void bellman_ford(graph_t * g){
 }
 
 int main(void){
-	int i;
+	int i,real_dist = 0;
 	graph_t Graph;
 
 	read_input(&Graph);
 	bellman_ford(&Graph);
+	real_dist = get_real_dist(&Graph);
 	reverse_edges(&Graph);
 	bellman_ford(&Graph);
+	real_dist += get_real_dist(&Graph);
 #ifdef DEBUG
 	printf("Graph->m_nodes_cnt is %d.\n", Graph.m_nodes_cnt);
 	printf("Predecessors:\n");
 	for(i = 0; i < Graph.m_nodes_cnt; i++)
 		printf("[%d] = %d\n",i+1, Graph.m_predecessor[i]+1);
 #endif
-	printf("Total distance to last node is %d\n", 
-			Graph.m_distance[Graph.m_nodes_cnt-1]);
+	if(real_dist >= INF)
+		printf("Back to jail!\n");
+	else
+	 	printf("Total distance to last node is %d\n", real_dist);
 	return 0;
 }
