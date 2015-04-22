@@ -16,4 +16,7 @@ The input will contain several test cases. Each test case will begin with an int
 #Output
 
 For each test case, output a single integer on a line by itself - the number of seconds you and your friend need between the time he leaves the jail cell and the time both of you board the train. (Assume that you do not need to wait for the train - they leave every second.) If there is no solution, print „Back to jail“.
-
+# #############################################################################
+How to compile lisp:
+	Unix:
+			clisp main.lisp
