@@ -55,14 +55,15 @@
 ;; output: ok or err
 (defun load_streets (remain_str)
 	(if (= remain_str 0)
-		ok	
-		(progn	(setf (aref *adjacency_matrix* 1 1) (read))
-					(read)
-					(read)
-					(load_streets (- remain_str 1)))))
+		ok
+		;; n is source node, m is destination node
+		(let (n m)	(progn	(setf n (read))
+									(setf m (read))					
+									(setf (aref *adjacency_matrix* n m) (read))
+									(load_streets (- remain_str 1))))))
 
 (print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
-(print (assert_ (aref *adjacency_matrix* 1 1) 5 "Test: Adjacency matrix on [1:1] is not 5"))
+(print (assert_ (aref *adjacency_matrix* 0 0) 5 "Test: Adjacency matrix on [0:0] is not 5"))
 ;(print (load_num_of_node))
 ;(print (load_num_of_streets))
 
