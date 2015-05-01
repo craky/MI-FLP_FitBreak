@@ -1,4 +1,4 @@
-; author: krakovoj@fit.cvut.c
+; author: krakovoj@fit.cvut.cz
 ; Bellman - Ford algorithm for solution FitBreak problem
 (defconstant n_max 100); maximum number of nodes
 (defconstant n_min 2)  ; minimum number of nodes
@@ -8,6 +8,7 @@
 (defconstant ok  0)	  ; "no problem" value
 (defparameter *n* NIL) ; number of nodes
 (defparameter *m* NIL) ; number of streets
+(setf *adjacency_matrix* (make-array (list n_max n_max):initial-element 0))
 
 (defun load_stdin () 
 	(setf *n* (read))
@@ -18,10 +19,10 @@
 ;; is using to compare two parameters if they are same, if not prints error
 ;; Input: parameter A and parameter B
 ;; Output: t or nil
-(defun assert_ (A B)
+(defun assert_ (A B str)
 	(if (eq A B)
 		t
-		(progn 	(print "Assert Warning. Params are not same!")
+		(progn 	(print str)
 					nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -55,12 +56,13 @@
 (defun load_streets (remain_str)
 	(if (= remain_str 0)
 		ok	
-		(progn	(read)
+		(progn	(setf (aref *adjacency_matrix* 1 1) (read))
 					(read)
 					(read)
 					(load_streets (- remain_str 1)))))
 
-(assert_ (load_streets (load_num_of_streets)) ok)
+(print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
+(print (assert_ (aref *adjacency_matrix* 1 1) 5 "Test: Adjacency matrix on [1:1] is not 5"))
 ;(print (load_num_of_node))
 ;(print (load_num_of_streets))
 
