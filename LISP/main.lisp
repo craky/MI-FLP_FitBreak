@@ -6,9 +6,13 @@
 (defconstant m_min 0)  ; minimum of streets
 (defconstant err  -999); error value
 (defconstant ok  0)	  ; "no problem" value
+(defconstant inf 9999) ; infinity (distance)
+(defconstant no_pre -2); no predecessor
 (defparameter *n* NIL) ; number of nodes
 (defparameter *m* NIL) ; number of streets
 (setf *adjacency_matrix* (make-array (list n_max n_max):initial-element 0))
+(setf *distance* (make-array (list n_max):initial-element inf))
+(setf *predecessor* (make-array (list n_max):initial-element no_pre)) 
 
 (defun load_stdin () 
 	(setf *n* (read))
@@ -49,7 +53,7 @@
 			    	err)
 		*m*))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; load streets and theirs distances
+;; loads streets and theirs distances
 ;; Loads all streets: start_node end_node length.
 ;; Input: remaining number of streets
 ;; output: ok or err
@@ -63,6 +67,9 @@
 										(setf (aref *adjacency_matrix* n m) d)
 										(setf (aref *adjacency_matrix* m n) d)
 										(load_streets (- remain_str 1))))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Bellman - Ford algorithm
+(defun bellman-ford() )
 
 (print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
 (print (assert_ (aref *adjacency_matrix* 3 2) 5 "Test: Adjacency matrix on [3:2] is not 5"))
