@@ -49,21 +49,23 @@
 			    	err)
 		*m*))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; load streets
+;; load streets and theirs distances
 ;; Loads all streets: start_node end_node length.
 ;; Input: remaining number of streets
 ;; output: ok or err
 (defun load_streets (remain_str)
 	(if (= remain_str 0)
 		ok
-		;; n is source node, m is destination node
-		(let (n m)	(progn	(setf n (read))
-									(setf m (read))					
-									(setf (aref *adjacency_matrix* n m) (read))
-									(load_streets (- remain_str 1))))))
+		;; n is source node, m is destination node, d is distance
+		(let (n m d)	(progn	(setf n (read))
+										(setf m (read))
+										(setf d (read))
+										(setf (aref *adjacency_matrix* n m) d)
+										(setf (aref *adjacency_matrix* m n) d)
+										(load_streets (- remain_str 1))))))
 
 (print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
-(print (assert_ (aref *adjacency_matrix* 0 0) 5 "Test: Adjacency matrix on [0:0] is not 5"))
+(print (assert_ (aref *adjacency_matrix* 3 2) 5 "Test: Adjacency matrix on [3:2] is not 5"))
 ;(print (load_num_of_node))
 ;(print (load_num_of_streets))
 
