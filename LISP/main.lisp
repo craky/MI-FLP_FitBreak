@@ -108,6 +108,16 @@
 	ok
 	)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; get real distance
+;; Returns real distance between two nodes.
+(defun get_real_dist ()
+	(let (dest source)
+		(setf dest (- *n* 1))
+		(setf source (aref *predecessor* dest))
+		(if (< source 0)
+			ok
+			(dist dest source 0))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; distance
 ;; Computes distance of two nodes
 (defun dist (dest source distance)
@@ -137,6 +147,7 @@
 (setf (aref *adjacency_matrix* 2 1) 6)
 (setf (aref *adjacency_matrix* 2 2) 0)
 (print (assert_ (dist 2 0 0) 4 "Test: Example distance 2 and 0 is not 4"))
+(print (assert_ (get_real_dist) 4 "Test: get_real_dist is not 4"))
 ;(print (load_num_of_node))
 ;(print (load_num_of_streets))
 
