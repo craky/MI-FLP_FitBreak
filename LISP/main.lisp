@@ -107,6 +107,13 @@
 	(through_all_nodes *n*)
 	ok
 	)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; distance
+;; Computes distance of two nodes
+(defun dist (dest source distance)
+	(if (eq dest 0)
+		distance
+		(dist source (aref *predecessor* dest) (+ (aref *adjacency_matrix* dest source) distance))))
 
 (setf *n* 10)
 (print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
@@ -114,6 +121,22 @@
 (print (assert_ (through_all_nodes *n*) ok "Test: through_all_nodes does not return ok."))
 (print (assert_ (j_nodes *n*) ok "Test: j_nodes does not return ok."))
 (print (assert_ (bellman-ford) ok "Test: bellman-ford does not return ok."))
+
+(setf *n* 3)
+(print (assert_ *n* 3 "Test: *n* is not 3."))
+(setf (aref *predecessor* 0) no_pre)
+(setf (aref *predecessor* 1) no_pre)
+(setf (aref *predecessor* 2) 0)
+(setf (aref *adjacency_matrix* 0 0) 0)
+(setf (aref *adjacency_matrix* 0 1) 2)
+(setf (aref *adjacency_matrix* 0 2) 4)
+(setf (aref *adjacency_matrix* 1 0) 2)
+(setf (aref *adjacency_matrix* 1 1) 0)
+(setf (aref *adjacency_matrix* 1 2) 6)
+(setf (aref *adjacency_matrix* 2 0) 4)
+(setf (aref *adjacency_matrix* 2 1) 6)
+(setf (aref *adjacency_matrix* 2 2) 0)
+(print (assert_ (dist 2 0 0) 4 "Test: Example distance 2 and 0 is not 4"))
 ;(print (load_num_of_node))
 ;(print (load_num_of_streets))
 
