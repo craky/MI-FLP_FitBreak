@@ -61,8 +61,8 @@
 	(if (= remain_str 0)
 		ok
 		;; n is source node, m is destination node, d is distance
-		(let (n m d)	(progn	(setf n (read))
-										(setf m (read))
+		(let (n m d)	(progn	(setf n (- (read) 1))
+										(setf m (- (read) 1))
 										(setf d (read))
 										(setf (aref *adjacency_matrix* n m) d)
 										(setf (aref *adjacency_matrix* m n) d)
@@ -79,32 +79,37 @@
 ;; k nodes
 ;; It is simulation of third loop in three nested loops
 (defun k_nodes (y k)
-	(if (> (aref *adjacency_matrix* y k) 0)
-		(check_distance y k)
-		ok))
+	(if (eq k *n*)
+		ok
+		(if (> (aref *adjacency_matrix* y k) 0)
+			(progn (check_distance y k)
+					 (k_nodes y (+ k 1)))
+			(k_nodes y (+ k 1)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; j nodes
 ;; It is simulation of second loop in three nested loops
 (defun j_nodes (y)
-	(if (eq y 0)
+	(if (eq y *n*)
 		ok
-		(progn (k_nodes y *n*)
-			    (j_nodes (- y 1)))))
+		(progn (k_nodes y 0)
+			    (j_nodes (+ y 1)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; through all nodes
 ;; will do cycle through all nodes
 ;; It is simulation of first loop in three nested loops
 (defun through_all_nodes (x)
-	(if (eq x 0)
+	(if (eq x *n*)
 		ok
-		(progn (j_nodes *n*)
-				 (through_all_nodes (- x 1)))))
+		(progn (j_nodes 0)
+				 (through_all_nodes (+ x 1)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Bellman - Ford algorithm
 (defun bellman-ford()
+	(setf *distance* (make-array (list n_max):initial-element inf))
+	(setf *predecessor* (make-array (list n_max):initial-element no_pre)) 
 	;; set distance of first node 0
 	(setf (aref *distance* 0) 0)
-	(through_all_nodes *n*)
+	(through_all_nodes 0)
 	ok
 	)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -115,7 +120,7 @@
 		(setf dest (- *n* 1))
 		(setf source (aref *predecessor* dest))
 		(if (< source 0)
-			ok
+			inf	
 			(dist dest source 0))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; distance
@@ -124,30 +129,65 @@
 	(if (eq dest 0)
 		distance
 		(dist source (aref *predecessor* dest) (+ (aref *adjacency_matrix* dest source) distance))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; reverse
+;; Reverses edges
+(defun reverse_e (source dest)
+	(if (eq dest 0)
+		ok
+		(progn 	
+					(setf (aref *adjacency_matrix* source dest) (* (aref *adjacency_matrix* source dest) -1))
+					(reverse_e (aref *predecessor* dest) source))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; reverse edges
+;; Reverses edges
+(defun reverse_edges ()
+	(let (dest source)
+		(setf dest (- *n* 1))
+		(setf source (aref *predecessor* dest))
+		(if (< source 0)
+			ok
+			(reverse_e source dest))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Solve fit break
+(defun solve_fit_break ()
+	(load_num_of_node)
+	(load_streets (load_num_of_streets)) 
+	(bellman-ford)
+	(let (total_dist)
+		(setf total_dist (get_real_dist))
+		(reverse_edges)
+		(bellman-ford)
+		(setf total_dist (+ total_dist (get_real_dist)))
+		(if (> total_dist (- inf 1))
+			(print "Back to jail")
+		   (print total_dist))))
 
-(setf *n* 10)
-(print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
-(print (assert_ (aref *adjacency_matrix* 3 2) 5 "Test: Adjacency matrix on [3:2] is not 5."))
-(print (assert_ (through_all_nodes *n*) ok "Test: through_all_nodes does not return ok."))
-(print (assert_ (j_nodes *n*) ok "Test: j_nodes does not return ok."))
-(print (assert_ (bellman-ford) ok "Test: bellman-ford does not return ok."))
+;(setf *n* 10)
+;(print (assert_ (load_streets (load_num_of_streets)) ok "Test: Number of streets is not same!"))
+;(print (assert_ (aref *adjacency_matrix* 3 2) 5 "Test: Adjacency matrix on [3:2] is not 5."))
+;(print (assert_ (through_all_nodes *n*) ok "Test: through_all_nodes does not return ok."))
+;(print (assert_ (j_nodes *n*) ok "Test: j_nodes does not return ok."))
+;(print (assert_ (bellman-ford) ok "Test: bellman-ford does not return ok."))
 
-(setf *n* 3)
-(print (assert_ *n* 3 "Test: *n* is not 3."))
-(setf (aref *predecessor* 0) no_pre)
-(setf (aref *predecessor* 1) no_pre)
-(setf (aref *predecessor* 2) 0)
-(setf (aref *adjacency_matrix* 0 0) 0)
-(setf (aref *adjacency_matrix* 0 1) 2)
-(setf (aref *adjacency_matrix* 0 2) 4)
-(setf (aref *adjacency_matrix* 1 0) 2)
-(setf (aref *adjacency_matrix* 1 1) 0)
-(setf (aref *adjacency_matrix* 1 2) 6)
-(setf (aref *adjacency_matrix* 2 0) 4)
-(setf (aref *adjacency_matrix* 2 1) 6)
-(setf (aref *adjacency_matrix* 2 2) 0)
-(print (assert_ (dist 2 0 0) 4 "Test: Example distance 2 and 0 is not 4"))
-(print (assert_ (get_real_dist) 4 "Test: get_real_dist is not 4"))
-;(print (load_num_of_node))
-;(print (load_num_of_streets))
+;(setf *n* 3)
+;(print (assert_ *n* 3 "Test: *n* is not 3."))
+;(setf (aref *predecessor* 0) no_pre)
+;(setf (aref *predecessor* 1) no_pre)
+;(setf (aref *predecessor* 2) 0)
+;(setf (aref *adjacency_matrix* 0 0) 0) 
+;(setf (aref *adjacency_matrix* 0 1) 2)
+;(setf (aref *adjacency_matrix* 0 2) 4)
+;(setf (aref *adjacency_matrix* 1 0) 2)
+;(setf (aref *adjacency_matrix* 1 1) 0)
+;(setf (aref *adjacency_matrix* 1 2) 6)
+;(setf (aref *adjacency_matrix* 2 0) 4)
+;(setf (aref *adjacency_matrix* 2 1) 6)
+;(setf (aref *adjacency_matrix* 2 2) 0)
+;(print (assert_ (dist 2 0 0) 4 "Test: Example distance 2 and 0 is not 4"))
+;(print (assert_ (get_real_dist) 4 "Test: get_real_dist is not 4"))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REAL loading of program
+(solve_fit_break)
+
 
