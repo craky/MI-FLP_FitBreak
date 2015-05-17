@@ -18,6 +18,13 @@ distance(5,4,2).
 distance(0,2,15).
 distance(2,0,15).
 
+/* Minimum */
+minimum([Front|Back],Min):- minimum(Back,Front,Min).
+minimum([],Min,Min).
+minimum([[Path,Length]|Rest],[M1,M2],Min):-
+	(Length < M2 -> minimum(Rest,[Path,Length],Min);
+		minimum(Rest,[M1,M2],Min)).
+		
 /* Invert list L and store it to the result R */
 invert(L,R):- invert(L,[],R).
 
@@ -35,4 +42,4 @@ path(U,V,P,R,D):- distance(U,Y,L), Y \== V,
 /* (Source, Destination, Path, Length) */
 selectPath(S,D,P,L):-
 	bagof([P2,L2],path(S,D,P2,L2),R)->
-		writef("Path was found.");writef("Path was not found").
+		minimum(R,[P,L]);L is 9999.%9999 is infinity
