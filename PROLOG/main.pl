@@ -2,63 +2,41 @@
 * MI-FLP - FitBreak 
 * Vojtech Krakora, krakovoj@fit.cvut.cz
 */
-numberOfNodes(3).
+/* Start */
+start(_):-
+	loadNum(NumberOfNodes),
+	NumberOfNodes > 0,
+	NumberOfNodes < 999,
+	loadNum(NumberOfEdges),
+	NumberOfEdges > 0,
+	loadAllEdges(NumberOfEdges),
+	solve(1,NumberOfNodes,_).
 
-task1(_):-
-	assert(distance(1,2,999)),
-	assert(distance(2,1,999)).
+/* Load number */
+/* Reads whole line and converts it to a number*/
+loadNum(Num):-
+	read_line_to_codes(user_input,Line),
+	number_codes(Num,Line).
 
-task2(_):-
-	assert(distance(1,3,10)),
-	assert(distance(3,1,10)),
-	assert(distance(2,1,20)),
-	assert(distance(1,2,20)),
-	assert(distance(3,2,50)),
-	assert(distance(2,3,50)).
+/* Assert edge*/
+assertEdge([From, To, Dist]):-
+	assert(distance(From,To,Dist)),
+	assert(distance(To,From,Dist)).
 
-task3(_):-
-	assert(distance(1,2,10)),
-   assert(distance(1,3,10)),
-   assert(distance(1,4,10)),
-	assert(distance(2,5,10)),
-	assert(distance(3,5,10)),
-	assert(distance(4,5,10)),
-	assert(distance(5,7,10)),
-	assert(distance(6,7,10)),
-	assert(distance(7,8,10)),
-	assert(distance(6,9,10)),
-	assert(distance(7,9,10)),
-	assert(distance(8,9,10)),
-	assert(distance(2,1,10)),
-	assert(distance(3,1,10)),
-	assert(distance(4,1,10)),
-	assert(distance(5,2,10)),
-	assert(distance(5,3,10)),
-	assert(distance(5,4,10)),
-	assert(distance(7,5,10)),
-	assert(distance(7,6,10)),
-	assert(distance(8,7,10)),
-	assert(distance(9,6,10)),
-	assert(distance(9,7,10)),
-	assert(distance(9,8,10)).
-
-task4(_):-
-	assert(distance(1,2,1)),
-	assert(distance(2,3,1)),
-	assert(distance(3,6,1)),
-	assert(distance(1,4,100)),
-	assert(distance(4,5,100)),
-	assert(distance(5,6,100)),
-	assert(distance(1,3,10)),
-	assert(distance(2,6,10)),
-	assert(distance(2,1,1)),
-	assert(distance(3,2,1)),
-	assert(distance(6,3,1)),
-	assert(distance(4,1,100)),
-	assert(distance(4,5,100)),
-	assert(distance(6,5,100)),
-	assert(distance(3,1,10)),
-	assert(distance(6,2,10)).
+/* Load all edges */
+loadAllEdges(0).
+loadAllEdges(Remain):-
+	loadEdge(_),
+	Remain2 is Remain -1,
+	loadAllEdges(Remain2).
+	
+/* Load edge */
+loadEdge(_):-
+	read_line_to_codes(user_input,Line),
+	atom_codes(Atoms,Line),
+	atomic_list_concat(Separated,' ',Atoms),
+	maplist(atom_number,Separated,Numbers),
+	assertEdge(Numbers).
 
 /* Solve */
 solve(From,To,TotalDist):-
@@ -70,7 +48,7 @@ solve(From,To,TotalDist):-
 		write(TotalDist)).
 	
 
-/*Second element from list*/	
+/* Second element from list */	
 secondElem(Elem,[Elem|_]).
 
 /* Reverse edges */
