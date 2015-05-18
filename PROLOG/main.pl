@@ -4,19 +4,86 @@
 */
 numberOfNodes(3).
 
-distance(1,3,10).
-distance(3,1,10).
-distance(2,1,20).
-distance(1,2,20).
-distance(3,2,50).
-distance(2,3,50).
-/* Testing distances */
-distance(3,4,70).
-distance(4,3,70).
-distance(4,5,2).
-distance(5,4,2).
-distance(0,2,15).
-distance(2,0,15).
+task1(_):-
+	assert(distance(1,2,999)),
+	assert(distance(2,1,999)).
+
+task2(_):-
+	assert(distance(1,3,10)),
+	assert(distance(3,1,10)),
+	assert(distance(2,1,20)),
+	assert(distance(1,2,20)),
+	assert(distance(3,2,50)),
+	assert(distance(2,3,50)).
+
+task3(_):-
+	assert(distance(1,2,10)),
+   assert(distance(1,3,10)),
+   assert(distance(1,4,10)),
+	assert(distance(2,5,10)),
+	assert(distance(3,5,10)),
+	assert(distance(4,5,10)),
+	assert(distance(5,7,10)),
+	assert(distance(6,7,10)),
+	assert(distance(7,8,10)),
+	assert(distance(6,9,10)),
+	assert(distance(7,9,10)),
+	assert(distance(8,9,10)),
+	assert(distance(2,1,10)),
+	assert(distance(3,1,10)),
+	assert(distance(4,1,10)),
+	assert(distance(5,2,10)),
+	assert(distance(5,3,10)),
+	assert(distance(5,4,10)),
+	assert(distance(7,5,10)),
+	assert(distance(7,6,10)),
+	assert(distance(8,7,10)),
+	assert(distance(9,6,10)),
+	assert(distance(9,7,10)),
+	assert(distance(9,8,10)).
+
+task4(_):-
+	assert(distance(1,2,1)),
+	assert(distance(2,3,1)),
+	assert(distance(3,6,1)),
+	assert(distance(1,4,100)),
+	assert(distance(4,5,100)),
+	assert(distance(5,6,100)),
+	assert(distance(1,3,10)),
+	assert(distance(2,6,10)),
+	assert(distance(2,1,1)),
+	assert(distance(3,2,1)),
+	assert(distance(6,3,1)),
+	assert(distance(4,1,100)),
+	assert(distance(4,5,100)),
+	assert(distance(6,5,100)),
+	assert(distance(3,1,10)),
+	assert(distance(6,2,10)).
+
+/* Solve */
+solve(From,To,TotalDist):-
+	selectPath(From,To,Path,Dist),
+	revers(Path),
+	selectPath(From,To,_,Dist2),
+	TotalDist is Dist+Dist2,
+	(TotalDist >9998 -> writef("Back to jail!");
+		write(TotalDist)).
+	
+
+/*Second element from list*/	
+secondElem(Elem,[Elem|_]).
+
+/* Reverse edges */
+revers([]).
+revers([_]).
+revers([First|Rest]):-
+	secondElem(Second,Rest),
+	distance(First,Second,Distance),
+	NewDist is -Distance,
+	retract(distance(First,Second,Distance)),
+	retract(distance(Second,First,Distance)),
+	assert(distance(Second,First,NewDist)),
+	revers(Rest).
 
 /* Minimum */
 minimum([Front|Back],Min):- minimum(Back,Front,Min).
